@@ -2,7 +2,7 @@
 // - /assets/* (file có hash): cache-first, không bao giờ đổi.
 // - HTML, icon, manifest: stale-while-revalidate (hiện bản cache ngay, tải bản mới ngầm).
 // - /api/*: không đụng vào, luôn đi mạng.
-const CACHE = 'lich-tap-v1';
+const CACHE = 'lich-tap-v2';
 
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => {

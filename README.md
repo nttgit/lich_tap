@@ -36,6 +36,7 @@ public/sw.js             service worker
 4. Redeploy (biến môi trường chỉ có hiệu lực sau khi deploy lại).
 5. *(Tuỳ chọn)* Settings → Functions → Region chọn **Singapore (sin1)** cho cùng vùng với Redis.
 6. Trên iPhone: mở bằng Safari → Chia sẻ → **Thêm vào MH chính** để chạy toàn màn hình như app.
+   iOS chỉ đọc cấu hình thanh trạng thái **lúc thêm vào MH chính**: nếu đổi phần `<head>` của `index.html`, phải xoá icon cũ rồi thêm lại (trước đó mở trang trong Safari và tải lại 2 lần để chắc chắn đang là bản mới).
 
 ## Chạy ở máy
 
@@ -57,4 +58,3 @@ npm run build:demo   # bản demo 1 file HTML có dữ liệu mẫu: dist-demo/d
 ## Ghi chú
 
 - “Hôm nay” tính theo giờ của điện thoại.
-- Ở light mode, khi cài ra màn hình chính iPhone, chữ thanh trạng thái có thể khó đọc (app dùng kiểu status bar trong suốt, hợp dark mode).
