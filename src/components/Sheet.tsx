@@ -1,5 +1,31 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
-import type { ComponentChildren } from 'preact';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { render, type ComponentChildren } from 'preact';
+
+/**
+ * Vẽ nội dung thẳng vào <body>, nằm ngoài mọi màn hình con.
+ * Trên iOS, vùng cuộn của từng màn tạo "lớp" riêng, nên sheet mở từ trong màn
+ * Bài tập bị tab bar đè lên (che mất nút Xoá). Đưa ra <body> thì sheet luôn nằm trên cùng.
+ */
+function Portal({ children }: { children: ComponentChildren }) {
+  const host = useRef<HTMLDivElement | null>(null);
+  if (!host.current) host.current = document.createElement('div');
+  useLayoutEffect(() => {
+    const el = host.current!;
+    document.body.appendChild(el);
+    return () => {
+      render(null, el);
+      el.remove();
+    };
+  }, []);
+  useLayoutEffect(() => {
+    render(<>{children}</>, host.current!);
+  });
+  return null;
+}
+
+// Khi có sheet đang mở thì ẩn tab bar (giống app iOS gốc). Không phụ thuộc thứ tự lớp
+// của Safari, nên nút ở đáy sheet (Lưu, Xoá) không bao giờ bị che.
+let openSheets = 0;
 
 type Props = {
   title: string;
@@ -18,6 +44,14 @@ export function Sheet({ title, onClose, children }: Props) {
     setClosing(true);
     setTimeout(onClose, 200);
   };
+
+  useEffect(() => {
+    openSheets++;
+    document.body.classList.add('sheet-open');
+    return () => {
+      if (--openSheets === 0) document.body.classList.remove('sheet-open');
+    };
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close();
@@ -45,16 +79,18 @@ export function Sheet({ title, onClose, children }: Props) {
   };
 
   return (
-    <div class={`sheet-wrap${closing ? ' closing' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
-      <div class="backdrop" onClick={close} />
-      <div class="sheet" ref={sheet}>
-        <div class="sheet-head" onTouchStart={start} onTouchMove={move} onTouchEnd={end}>
-          <div class="grabber" />
-          <div class="sheet-title">{title}</div>
-          <button class="link-btn" onClick={close}>Đóng</button>
+    <Portal>
+      <div class={`sheet-wrap${closing ? ' closing' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
+        <div class="backdrop" onClick={close} />
+        <div class="sheet" ref={sheet}>
+          <div class="sheet-head" onTouchStart={start} onTouchMove={move} onTouchEnd={end}>
+            <div class="grabber" />
+            <div class="sheet-title">{title}</div>
+            <button class="link-btn" onClick={close}>Đóng</button>
+          </div>
+          <div class="sheet-body">{children(close)}</div>
         </div>
-        <div class="sheet-body">{children(close)}</div>
       </div>
-    </div>
+    </Portal>
   );
 }

@@ -1064,6 +1064,7 @@ p {
 
 /* ---------- tab bar ---------- */
 .tabbar {
+  transition: opacity 0.2s ease, visibility 0.2s;
   position: fixed;
   left: 50%;
   bottom: var(--tabbar-gap);
@@ -1118,6 +1119,14 @@ p {
   position: fixed;
   inset: 0;
   z-index: 40;
+  transform: translateZ(0); /* lớp riêng, nằm trên mọi thứ trên Safari */
+}
+/* đang mở sheet: ẩn tab bar và nút nổi */
+body.sheet-open .tabbar,
+body.sheet-open .float-today {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 .backdrop {
   position: absolute;
