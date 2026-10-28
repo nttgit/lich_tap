@@ -28,7 +28,10 @@ export function DayEditor({ log, categories, onSave, onManage, inSheet, heading 
       const ids = new Set(c.exercises.map((e) => e.id));
       setEx(ex.filter((x) => !ids.has(x)));
     } else {
+      // chọn danh mục → tích sẵn tất cả bài tập của nó, bài nào không tập thì bỏ tích
       setCats([...cats, c.id]);
+      const all = c.exercises.filter((e) => !e.deleted && !ex.includes(e.id)).map((e) => e.id);
+      setEx([...ex, ...all]);
     }
   };
   const toggleEx = (id: string) => setEx(ex.includes(id) ? ex.filter((x) => x !== id) : [...ex, id]);
